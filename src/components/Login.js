@@ -6,7 +6,7 @@ import { LoginSocialFacebook } from "reactjs-social-login";
 import { LoginSocialGoogle } from "reactjs-social-login";
 
 const Login = () => {
-  const REDIRECT_URI = window.location.href;
+  // const REDIRECT_URI = window.location.href;
   const [provider, setProvider] = useState(null);
   const [profile, setProfile] = useState(null);
 
