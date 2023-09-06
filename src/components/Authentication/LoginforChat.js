@@ -59,8 +59,17 @@ const LoginforChat = () => {
         </InputGroup>
       </FormControl>
 
-      <Button colorScheme="teal" variant="solid" onClick={submithandler}>
+      <Button colorScheme="purple" variant="solid" onClick={submithandler}>
         Sign In
+      </Button>
+      <Button
+        colorScheme="whatsapp"
+        onClick={() => {
+          setEmail("abbas@test.com");
+          setPassword("12345");
+        }}
+      >
+        Guest User Login
       </Button>
     </VStack>
   );
