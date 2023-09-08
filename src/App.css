@@ -4,7 +4,7 @@
   .App{
     min-height: 100vh;
     display: flex;
-    background-image: url('./pics/backGround.jpg ');
+    /* background-image: url('./pics/backGround.jpg '); */
     background-size: cover;
     background-position: center;
   } 

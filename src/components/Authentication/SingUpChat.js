@@ -14,6 +14,7 @@ import {
   Button,
   useToast,
 } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 firebase.initializeApp(firebaseConfig);
 const SingUpChat = () => {
   const [show, setShow] = useState(false);
@@ -23,36 +24,134 @@ const SingUpChat = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [pic, setPic] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [imageUrl, setImageUrl] = useState("");
+  const [picLoading, setPicLoading] = useState(false);
+  const [picUploaded, setPicUploaded] = useState(false);
   const toast = useToast();
+  const Navigate = useNavigate();
   // statuses for toast = ["success", "error", "warning", "info"];
 
-  const handleFileChange = (e) => {
-    setPic(e.target.files[0]);
-    console.log(pic);
-    if (pic && pic.type === "image/jpeg") {
-      setPic(pic);
-    } else {
+  const PicUpload = (uploadedPic) => {
+    setPicLoading(true);
+    if (uploadedPic === undefined) {
       toast({
-        title: "Wrong Picture Selected.",
-        description: "Only jpeg files are accepted.",
-        status: "error",
+        title: "Please Select an Image!",
+        status: "warning",
         duration: 5000,
         isClosable: true,
+        position: "bottom",
       });
-      e.target.value = ""; // Clear the file input
+      return;
+    }
+    console.log(uploadedPic);
+    setPic(uploadedPic);
+    if (uploadedPic.type === "image/jpeg" || uploadedPic.type === "image/png") {
+      // Firebase Code for uploaidng the file
+
+      const storageRef = firebase.storage().ref("/uploads");
+      const fileRef = storageRef.child(uploadedPic.name);
+
+      fileRef
+        .put(uploadedPic)
+        .then((snapshot) => {
+          fileRef.getDownloadURL().then((url) => {
+            console.log("The Picture URL Is", url);
+            setImageUrl(url);
+          });
+          setPicLoading(false);
+          setPicUploaded(true);
+          toast({
+            title: "Image uploaded  Successful",
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+            position: "bottom",
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+          setPicLoading(false);
+          setPicUploaded(false);
+        });
+    } else {
+      toast({
+        title: "Please Select an jpeg or png Image",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      setPicLoading(false);
+      setPicUploaded(false);
+      return;
     }
   };
 
-  const submithandler = (event) => {
-    event.preventDefault();
-    if (pic) {
-      const storageRef = firebase.storage().ref();
-      const fileRef = storageRef.child(pic.name);
-
-      fileRef.put(pic).then((snapshot) => {
-        console.log("Uploaded a blob or file!", snapshot);
+  const submithandler = async (e) => {
+    e.preventDefault();
+    setPicLoading(true);
+    if (!userName || !email || !password || !confirmPassword) {
+      toast({
+        title: "Please Fill all the Feilds",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
       });
+      setPicLoading(false);
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      toast({
+        title: "Passwords Do Not Match",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      setPicLoading(false);
+      return;
+    }
+    console.log(userName, email, password, imageUrl);
+    // code to Store the Data in the DB
+    try {
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+        },
+      };
+      const { data } = await axios.post(
+        "/api/user",
+        {
+          name: userName,
+          email: email,
+          password: password,
+          pic: imageUrl,
+        },
+        config
+      );
+      console.log(data);
+      toast({
+        title: "Registration Successful",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      localStorage.setItem("userInfo", JSON.stringify(data));
+      setPicLoading(false);
+      Navigate("/chats");
+    } catch (error) {
+      toast({
+        title: "Error Occured!",
+        description: error.response.data.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      setPicLoading(false);
     }
   };
 
@@ -135,16 +234,27 @@ const SingUpChat = () => {
 
         <FormControl id="pic" isRequired>
           <FormLabel>Add Your Pic</FormLabel>
+
           <Input
             p={1.5}
             type="file"
             accept="image/jpeg"
-            onChange={handleFileChange}
+            onChange={(e) => {
+              PicUpload(e.target.files[0]);
+            }}
+            disabled={picUploaded}
           />
+
           {pic && <p>Selected File: {pic.name}</p>}
         </FormControl>
 
-        <Button colorScheme="teal" variant="solid" type="submit">
+        <Button
+          colorScheme="teal"
+          width="100%"
+          style={{ marginTop: 15 }}
+          type="submit"
+          isLoading={picLoading}
+        >
           Sign Up
         </Button>
       </form>

@@ -8,7 +8,7 @@ import {
 import "./App.css";
 import ChatPage from "./components/ChatPage";
 import HomePage from "./components/HomePage";
-import ImageUpload from "./components/ImageUpload";
+// import ImageUpload from "./components/ImageUpload";
 
 function App() {
   return (
