@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from "react";
 // import Login from "./Login";
 import {
   Box,
@@ -12,8 +12,17 @@ import {
 } from "@chakra-ui/react";
 import LoginforChat from "./Authentication/LoginforChat";
 import SingUpChat from "./Authentication/SingUpChat";
+import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
+  const [user, setUser] = useState();
+  const Navigate = useNavigate();
+  useEffect(() => {
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    setUser(userInfo);
+    if (userInfo) Navigate("/chats");
+  }, [Navigate]);
+
   return (
     <Container maxW="xl" centerContent>
       <Box
@@ -52,8 +61,7 @@ const HomePage = () => {
 
           <TabPanels>
             <TabPanel>
-              {/* <Login /> */}
-                            <LoginforChat />
+              <LoginforChat />
             </TabPanel>
             <TabPanel>
               <SingUpChat />
@@ -65,4 +73,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage
+export default HomePage;

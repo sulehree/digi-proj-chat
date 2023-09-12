@@ -23,7 +23,7 @@ const LoginforChat = () => {
 
   const submithandler = async (e) => {
     e.preventDefault();
-    console.log(email, password);
+    
     setPicLoading(true);
     if (!email || !password) {
       toast({
@@ -53,7 +53,7 @@ const LoginforChat = () => {
         },
         config
       );
-      console.log(data);
+      
       toast({
         title: "USer Login Successfully",
         status: "success",
@@ -63,7 +63,7 @@ const LoginforChat = () => {
       });
       localStorage.setItem("userInfo", JSON.stringify(data));
       setPicLoading(false);
-      // Navigate("/chats");
+      Navigate("/chats");
     } catch (error) {
       toast({
         title: "Error Occured!",
