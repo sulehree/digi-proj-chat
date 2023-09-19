@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 // import Login from "./Login";
 import {
   Box,
@@ -10,17 +10,18 @@ import {
   TabPanels,
   TabPanel,
 } from "@chakra-ui/react";
-import LoginforChat from "./Authentication/LoginforChat";
-import SingUpChat from "./Authentication/SingUpChat";
+import LoginforChat from "../components/Authentication/LoginforChat";
+import SingUpChat from "../components/Authentication/SingUpChat";
 import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
-  const [user, setUser] = useState();
   const Navigate = useNavigate();
+
+  // Here i will check if user is already login.. and his information in store in local storage.. i will re direct the use to Chat Page:
+
   useEffect(() => {
-    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-    setUser(userInfo);
-    if (userInfo) Navigate("/chats");
+    const user = JSON.parse(localStorage.getItem("userInfo")); // when even we get information from local storgae we have to parse ..
+    if (user) Navigate("/chats");
   }, [Navigate]);
 
   return (
@@ -46,7 +47,7 @@ const HomePage = () => {
       </Box>
 
       <Box
-        p={5}
+        p={4}
         bg={"white"}
         w="100%"
         m="10px 0 15px 0"
@@ -54,9 +55,9 @@ const HomePage = () => {
         borderWidth="1px"
       >
         <Tabs isFitted variant="enclosed">
-          <TabList>
-            <Tab color="green">Login</Tab>
-            <Tab color="green">Signup </Tab>
+          <TabList >
+            <Tab color="blue">Login</Tab>
+            <Tab color="blue">Signup </Tab>
           </TabList>
 
           <TabPanels>
